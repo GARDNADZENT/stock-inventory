@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login - MAASAI SHOP</title>
+    <title>Register - MAASAI SHOP</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -157,12 +157,6 @@
             animation: slideIn 0.5s ease;
         }
 
-        .alert-success {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.15));
-            color: #065f46;
-            border-left: 4px solid #10b981;
-        }
-
         .alert-danger {
             background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 38, 0.15));
             color: #991b1b;
@@ -172,33 +166,37 @@
 </head>
 <body>
 <main class="login-shell d-flex align-items-center justify-content-center px-3">
-    <form method="post" action="{{ route('login.store') }}" class="login-panel bg-white p-4">
+    <form method="post" action="{{ route('register.store') }}" class="login-panel bg-white p-4">
         @csrf
         <div class="d-flex align-items-center gap-3 mb-4">
             <span class="brand-mark">MS</span>
             <div>
                 <h1 class="h4 brand-title mb-1">MAASAI SHOP</h1>
-                <div class="text-muted small fw-semibold text-uppercase"><i class="fas fa-sign-in-alt me-1"></i> Sign in</div>
+                <div class="text-muted small fw-semibold text-uppercase"><i class="fas fa-user-plus me-1"></i> Create account</div>
             </div>
         </div>
-        @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
         @if($errors->any())
             <div class="alert alert-danger">{{ $errors->first() }}</div>
         @endif
         <div class="mb-3">
+            <label for="name" class="form-label"><i class="fas fa-user me-2"></i>Full name</label>
+            <input id="name" type="text" name="name" value="{{ old('name') }}" class="form-control" autocomplete="name" autofocus required placeholder="Enter your full name">
+        </div>
+        <div class="mb-3">
             <label for="email" class="form-label"><i class="fas fa-envelope me-2"></i>Email address</label>
-            <input id="email" type="email" name="email" value="{{ old('email') }}" class="form-control" autocomplete="email" autofocus required placeholder="Enter your email">
+            <input id="email" type="email" name="email" value="{{ old('email') }}" class="form-control" autocomplete="email" required placeholder="Enter your email">
         </div>
         <div class="mb-3">
             <label for="password" class="form-label"><i class="fas fa-lock me-2"></i>Password</label>
-            <input id="password" type="password" name="password" class="form-control" autocomplete="current-password" required placeholder="Enter your password">
+            <input id="password" type="password" name="password" class="form-control" autocomplete="new-password" required placeholder="Create a password">
         </div>
-        <button class="btn btn-success w-100 mb-3"><i class="fas fa-sign-in-alt me-2"></i>Sign in</button>
-        <div class="d-flex justify-content-between">
-            <a href="{{ route('password.forgot') }}" class="btn-link-custom small"><i class="fas fa-key me-1"></i> Forgot password?</a>
-            <a href="{{ route('register') }}" class="btn-link-custom small"><i class="fas fa-user-plus me-1"></i> Create account</a>
+        <div class="mb-3">
+            <label for="password_confirmation" class="form-label"><i class="fas fa-lock me-2"></i>Confirm password</label>
+            <input id="password_confirmation" type="password" name="password_confirmation" class="form-control" autocomplete="new-password" required placeholder="Confirm your password">
+        </div>
+        <button class="btn btn-success w-100 mb-3"><i class="fas fa-user-plus me-2"></i>Create account</button>
+        <div class="text-center">
+            <a href="{{ route('login') }}" class="btn-link-custom small"><i class="fas fa-sign-in-alt me-1"></i> Already have an account? Sign in</a>
         </div>
     </form>
 </main>

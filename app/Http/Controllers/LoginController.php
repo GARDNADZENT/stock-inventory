@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 class LoginController extends Controller
@@ -23,33 +25,38 @@ class LoginController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $credentials = $request->validate([
-            'username' => ['required', 'string'],
+        $validated = $request->validate([
+            'email' => ['required', 'email'],
             'password' => ['required', 'string'],
         ]);
 
-        if ($credentials['username'] === 'sales1' && $credentials['password'] === 'sales') {
-            $request->session()->regenerate();
-            $request->session()->put('role', 'sales');
+        $user = User::query()->where('email', $validated['email'])->first();
 
-            return redirect()->route('sales.create');
+        if (! $user || ! Hash::check($validated['password'], $user->password)) {
+            return back()
+                ->withErrors(['email' => 'These credentials do not match our records.'])
+                ->onlyInput('email');
         }
 
-        if ($credentials['username'] === 'admin' && $credentials['password'] === 'admin') {
-            $request->session()->regenerate();
-            $request->session()->put('role', 'admin');
-
-            return redirect()->route('dashboard');
+        if (! $user->hasVerifiedEmail()) {
+            return back()
+                ->withErrors(['email' => 'Please verify your email address before logging in.'])
+                ->onlyInput('email');
         }
 
-        return back()
-            ->withErrors(['username' => 'Invalid username or password.'])
-            ->onlyInput('username');
+        $request->session()->regenerate();
+        $request->session()->put('role', $user->role);
+        $request->session()->put('user_email', $user->email);
+        $request->session()->put('user_name', $user->name);
+
+        return $user->role === 'admin'
+            ? redirect()->route('dashboard')->with('success', 'Welcome back.')
+            : redirect()->route('sales.create')->with('success', 'Welcome back.');
     }
 
     public function destroy(Request $request): RedirectResponse
     {
-        $request->session()->forget('role');
+        $request->session()->forget(['role', 'user_email', 'user_name']);
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
